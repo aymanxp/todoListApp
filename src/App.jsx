@@ -1,24 +1,46 @@
-import { useState } from 'react';
-import Header from './components/Header';
-import AddTaskForm from './components/AddTaskForm';
-import TasksContainer from './components/TasksContainer';
-import NoTaskDisplay from './components/NoTaskDisplay';
+import { useEffect, useState } from 'react';
+import Header from './components/Header/Header';
+import Form from './components/Form/Form';
+import TasksContainer from './components/Tasks/TasksContainer';
+import NoTaskDisplay from './components/Tasks/NoTaskDisplay';
 import { getTasks, getTask, deleteTask, addTask, updateTask } from './utils/main';
 
-const dataToUpdate = { title: "new title" };
-const id = "6ab40ca7dc199db0bddb12d2";
-
-const updatedTask = await updateTask(id, dataToUpdate);
-
-const tasks = await getTasks();
 
 const App = () => {
+
+  const [tasks, setTasks] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getTasks();
+      setTasks(data);
+      fetchData();
+    }
+  }, [])
+
+  const appendTask = newTask => setTasks(tasks + newTask);
+  const removeTask = taskId => {
+    newTasksList = tasks.filter(task => task.id === taskId);
+    setTasks(newTasksList);
+  }
+  const changeTaskStatus = taskId => {
+    tasks.forEach(task => {
+      if (task.id === taskId)
+        task.status = !task.status;
+    })
+    setTasks(tasks);
+  }
+
+
+
+
+
   return (
     <>
       <Header />
-      <AddTaskForm />
+      <Form appendTask={appendTask} />
       {
-        tasks.length === 0 ? <NoTaskDisplay /> : <TasksContainer tasks={tasks} />
+        tasks.length === 0 ? <NoTaskDisplay /> : <TasksContainer tasks={tasks} changeTaskStatus={changeTaskStatus} removeTask={removeTask} />
       }
     </>
   )
