@@ -1,7 +1,7 @@
-import { deleteTask, getTask } from '../../utils/main'
+import { deleteTask } from '../../utils/main'
 
 const DeleteTask = ({ taskId, removeTask }) => {
-  const handleDeleteTask = async (event, removeTask) => {
+  const handleDeleteTask = async event => {
     event.preventDefault();
     try {
       await deleteTask(taskId);
@@ -10,11 +10,9 @@ const DeleteTask = ({ taskId, removeTask }) => {
       console.error(error.message);
     }
   }
-
-
   return (
     <>
-      <button onClick={async event => await handleDeleteTask(event, taskId, removeTask)}>Delete</button>
+      <button onClick={handleDeleteTask}>Delete</button>
     </>
   )
 }

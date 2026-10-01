@@ -1,96 +1,49 @@
-const BASE_URL = `http://localhost:3001/api`
-const catchError = (error) => console.log(error.message);
+// const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5173/';
+const BASE_URL = 'http://localhost:3001';
 
-// Get all tasks
-async function getTasks() {
-  try {
-    const url = `${BASE_URL}/tasks`;
-    const response = await fetch(url, { method: "GET" });
-    if (!response.ok)
-      throw new Error(`Response status:  ${response.status}`);
-    const tasks = await response.json();
-    return tasks;
-  } catch (error) {
-    catchError(error);
+const request = async (url, options = {}) => {
+  const response = await fetch(`${BASE_URL}${url}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+  if (!response.ok) {
+    const message = `Request failed with status ${response.status}`;
+    try {
+      const data = await response.json();
+      if (data?.error) message = data.error;
+    } catch {
+    }
+    throw new Error(message);
   }
-}
-// Get a specific by Id 
-async function getTask(id) {
-  try {
-    const url = `${BASE_URL}/tasks/${id}`;
-    const response = await fetch(url, { method: "GET" });
-    const task = await response.json();
-    return task;
-  } catch (error) {
-    catchError(error);
-  }
-}
-// Delete a task by Id
-async function deleteTask(id) {
-  try {
-    const url = `${BASE_URL}/tasks/${id}`;
-    const response = await fetch(url, { method: "DELETE" });
-    if (!response.ok)
-      return false;
-    return true;
-  } catch (error) {
-    catchError(error);
-  }
+
+
+  // Delete return 204 No Content, Nothing to parse 
+  if (response.status === 204) return null;
+
+  const resp = await response.json();
+  return resp;
 }
 
 
-// Create a new task 
-async function addTask(newTask) {
-  try {
-    if (!newTask)
-      throw new Error('Task is undefined!');
-    const url = `${BASE_URL}/tasks`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        title: newTask.title,
-        description: newTask.description
-      })
-    });
-    if (!response.ok)
-      throw new Error(`Response status: ${response.status}`);
+export const getTasks = () => request('/api/tasks');
 
-    const addedTask = await response.json();
-    return addedTask;
-  } catch (error) {
-    catchError(error);
-  }
-}
+export const addTask = newTask =>
+  request('/api/tasks', {
+    method: 'POST',
+    body: JSON.stringify(newTask),
+  });
+
+
+export const updateTask = (id, updatedFields) =>
+  request(`/api/tasks/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updatedFields),
+  });
 
 
 
-// I need to test those :
+export const deleteTask = id =>
+  request(`/api/tasks/${id}`, {
+    method: 'DELETE',
+  })
 
-// Update a certain task by Id
-async function updateTask(id, dataToUpdate) {
-  try {
-    if (!id || !dataToUpdate)
-      throw new Error('Something is missing!');
-    const url = `${BASE_URL}/tasks/${id}`;
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ ...dataToUpdate })
-    });
-    if (!response.ok)
-      throw new Error(`Response status: ${response.status}`);
-
-    const updatedTask = await response.json();
-    return updatedTask;
-  } catch (error) {
-    catchError(error);
-  }
-}
-
-
-export { getTasks, getTask, deleteTask, addTask, updateTask };

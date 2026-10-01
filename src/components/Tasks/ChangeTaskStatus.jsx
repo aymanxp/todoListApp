@@ -1,21 +1,21 @@
 import { updateTask } from '../../utils/main';
 
 
-const ChangeTaskStatus = ({ taskId, oldStatus, ChangeTaskStatus }) => {
-  const handleStatusChange = async (event, taskId, ChangeTaskStatus) => {
+const ChangeTaskStatus = ({ taskId, oldStatus, updateTaskStatus }) => {
+  const handleStatusChange = async event => {
     event.preventDefault();
     try {
       await updateTask(taskId, { status: !oldStatus })
-      modifyTaskStatus(taskId);
+      updateTaskStatus(taskId);
     } catch (error) {
-      console.error(message.error);
+      console.error(error.message);
     }
   }
-  const BtnText = !oldStatus ? "Done" : "In Progress";
+  const btnText = !oldStatus ? "Done" : "In Progress";
 
   return (
     <>
-      <button onClick={async event => await handleStatusChange(event, taskId, ChangeTaskStatus)}>{BtnText}</button >
+      <button onClick={handleStatusChange}>{btnText}</button >
     </>
   )
 }

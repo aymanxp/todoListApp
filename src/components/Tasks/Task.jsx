@@ -1,23 +1,20 @@
-import { useState, useEffect } from 'react';
 import DeleteTask from './DeleteTask';
 import ChangeTaskStatus from './ChangeTaskStatus';
-import NoTaskDisplay from './NoTaskDisplay';
-import TaskContentAsDone from './TaskContentAsDone';
-import TaskContentAsNotDone from './TaskContentAsNotDone';
 
 
 
 
-const Task = ({ id, title, description, status, ChangeTaskStatus, removeTask }) => {
+const Task = ({ id, title, description, status, updateTaskStatus, removeTask }) => {
+  const taskState = status ? "Done" : "In Progress";
 
   return (
     < div >
-      <p>Title: {title}, Descripption: {description}</p>
-      <ChangeTaskStatus taskId={id} oldStatus={status} ChangeTaskStatus={ChangeTaskStatus} />
+      <p>Title: {title}, Descripption: {description}, Status: {taskState}</p>
+      <ChangeTaskStatus taskId={id} oldStatus={status} updateTaskStatus={updateTaskStatus} />
       <DeleteTask taskId={id} removeTask={removeTask} />
     </div >
-  )
-}
+  );
+};
 
 
 export default Task;
